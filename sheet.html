@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="de" data-faction="nyxaren">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0a0a0b" />
+  <title>Charakterbogen — Astranox</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .sheet-wrap { width:min(900px, calc(100% - 48px)); margin:150px auto 100px; }
+    .sheet-header { display:flex; justify-content:space-between; align-items:flex-end; border-bottom:2px solid var(--accent); padding-bottom:18px; margin-bottom:36px; }
+    .sheet-name { font:400 clamp(38px,5vw,60px)/.95 "Palatino Linotype",Palatino,Georgia,serif; }
+    .sheet-meta { font:400 13px Georgia,serif; color:var(--muted); text-align:right; }
+    .sheet-vital { display:flex; gap:40px; margin-bottom:30px; }
+    .sheet-vital div { text-align:center; }
+    .sheet-vital .val { font:400 34px "Palatino Linotype",Palatino,Georgia,serif; display:block; color:var(--accent-2); }
+    .sheet-vital .lbl { text-transform:uppercase; letter-spacing:.14em; font-size:10px; color:var(--muted); }
+    .sheet-grid { display:grid; grid-template-columns:1fr 1fr; gap:30px; }
+    .sheet-block { border:1px solid var(--line); padding:24px; margin-bottom:24px; }
+    .sheet-block h3 { text-transform:uppercase; letter-spacing:.14em; font-size:11px; color:var(--accent-2); margin:0 0 16px; font-weight:700; }
+    .sheet-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line); font-size:14px; }
+    .sheet-row:last-child { border-bottom:0; }
+    .sheet-print { margin-top:16px; }
+    @media (max-width:720px) { .sheet-grid { grid-template-columns:1fr; } }
+    @media print {
+      .grain, .scanlines, .site-header, .sheet-print, .sheet-back { display:none !important; }
+      body { background:#fff; color:#111; }
+      .sheet-name, .sheet-block h3 { color:#111; }
+      .sheet-block, .sheet-header { border-color:#999; }
+      .sheet-wrap { margin-top:0; }
+      @page { margin:1.5cm; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="home.html#top" aria-label="Astranox Startseite">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span>ASTRANOX</span>
+    </a>
+    <nav class="main-nav" aria-label="Hauptnavigation">
+      <a href="home.html#welt">Welt</a>
+      <a href="home.html#voelker">Völker</a>
+      <a href="home.html#zeitlinie">Zeitlinie</a>
+      <a href="home.html#agenten">Agenten</a>
+    </nav>
+    <a class="sheet-back" href="home.html#agenten" style="justify-self:end; text-decoration:none; text-transform:uppercase; letter-spacing:.12em; font-size:10px; color:var(--muted);">← Neuer Agent</a>
+  </header>
+
+  <div class="sheet-wrap" id="sheetRoot">
+    <p style="text-align:center; color:var(--muted);">Lade Charakterdaten …</p>
+  </div>
+
+  <script>
+  (function () {
+    var raw = localStorage.getItem("astranox:character");
+    var root = document.getElementById("sheetRoot");
+    if (!raw) {
+      root.innerHTML = "<p style='text-align:center;'>Kein Charakter gefunden. <a href='home.html#agenten' style='color:var(--accent-2);'>Jetzt einen erstellen</a>.</p>";
+      return;
+    }
+    var c = JSON.parse(raw);
+    if (c.faction) document.documentElement.dataset.faction = c.faction;
+
+    var attrNames = { koerper:"Körper", geschick:"Geschick", verstand:"Verstand", wille:"Wille", praesenz:"Präsenz" };
+    var skillNames = {
+      nahkampf:"Nahkampf", athletik:"Athletik", widerstand:"Widerstand",
+      fernkampf:"Fernkampf", heimlichkeit:"Heimlichkeit", fingerfertigkeit:"Fingerfertigkeit", pilotieren:"Pilotieren",
+      wissen:"Wissen", technik:"Technik", medizin:"Medizin", wahrnehmung:"Wahrnehmung",
+      disziplin:"Disziplin", okkultismus:"Okkultismus & Ritual",
+      ueberzeugung:"Überzeugung", einschuechterung:"Einschüchterung", taeuschung:"Täuschung"
+    };
+
+    var attrHtml = Object.keys(attrNames).map(function (k) {
+      return '<div class="sheet-row"><span>' + attrNames[k] + '</span><strong>' + c.attrs[k] + '</strong></div>';
+    }).join("");
+
+    var skillHtml = Object.keys(skillNames).map(function (k) {
+      var v = c.skills[k] || 0;
+      if (!v) return "";
+      return '<div class="sheet-row"><span>' + skillNames[k] + '</span><strong>' + v + '</strong></div>';
+    }).join("") || "<p style='color:var(--muted); font-size:13px;'>Keine Fertigkeitsränge vergeben.</p>";
+
+    root.innerHTML =
+      '<div class="sheet-header">' +
+        '<div><p class="eyebrow" style="margin-bottom:10px;">Agent des Dominat</p><h1 class="sheet-name">' + c.name + '</h1></div>' +
+        '<div class="sheet-meta">' + c.volk + (c.subfaction ? ' · ' + c.subfaction : '') + '</div>' +
+      '</div>' +
+      '<div class="sheet-vital">' +
+        '<div><span class="val">' + c.lp + '</span><span class="lbl">LP</span></div>' +
+        '<div><span class="val">' + c.gg + '</span><span class="lbl">GG</span></div>' +
+      '</div>' +
+      '<div class="sheet-grid">' +
+        '<div class="sheet-block"><h3>Attribute</h3>' + attrHtml + '</div>' +
+        '<div class="sheet-block"><h3>Fertigkeiten</h3>' + skillHtml + '</div>' +
+      '</div>' +
+      (c.ability ? '<div class="sheet-block"><h3>Besondere Fähigkeit</h3><p style="margin:0; color:#aaa397;">' + c.ability + '</p></div>' : '') +
+      (c.background ? '<div class="sheet-block"><h3>Hintergrund</h3><p style="margin:0; color:#aaa397;">' + c.background + '</p></div>' : '') +
+      '<button class="btn primary sheet-print" id="printBtn" type="button">Charakterbogen drucken</button>';
+
+    document.getElementById("printBtn").addEventListener("click", function () { window.print(); });
+  })();
+  </script>
+</body>
+</html>
