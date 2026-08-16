@@ -194,7 +194,63 @@
         </div>
 
         <div class="wizard-step" data-step="5">
-          <h3>Name &amp; Hintergrund</h3>
+          <h3>Ausrüstung</h3>
+          <div id="wizEquipBody">
+            <p class="wizard-note" style="margin-bottom:24px;">Startausrüstung eures Volkes. Wählt je eine Option pro Kategorie.</p>
+            <h4 style="font:400 16px Georgia,serif; color:var(--paper); margin:0 0 12px;">Waffe</h4>
+            <div class="wizard-sub-grid" id="wizEquipWeapon"></div>
+            <h4 style="font:400 16px Georgia,serif; color:var(--paper); margin:28px 0 12px;">Rüstung / Schutz</h4>
+            <div class="wizard-sub-grid" id="wizEquipArmor"></div>
+            <h4 style="font:400 16px Georgia,serif; color:var(--paper); margin:28px 0 12px;">Ausrüstung / Gadget</h4>
+            <div class="wizard-sub-grid" id="wizEquipGadget"></div>
+            <div class="wizard-field" style="margin-top:28px;">
+              <label for="wizEquipPersonal">Persönlicher Gegenstand (optional)</label>
+              <input type="text" id="wizEquipPersonal" placeholder="z. B. ein altes Familienerbstück" />
+            </div>
+          </div>
+          <p class="wizard-note" id="wizNoEquip" hidden>Für dieses Volk ist noch keine Startausrüstung ausgearbeitet — dieser Schritt wird übersprungen.</p>
+        </div>
+
+        <div class="wizard-step" data-step="6">
+          <h3>Herkunft &amp; Startsituation</h3>
+          <h4 style="font:400 16px Georgia,serif; color:var(--paper); margin:0 0 12px;">Warum seid ihr im Programm?</h4>
+          <div class="wizard-sub-grid" id="wizHooks"></div>
+          <h4 style="font:400 16px Georgia,serif; color:var(--paper); margin:28px 0 12px;">Rolle im Team</h4>
+          <div class="wizard-sub-grid" id="wizTeamRoles"></div>
+          <div class="wizard-field" style="margin-top:28px;">
+            <label for="wizBirthplace">Herkunftsort (optional)</label>
+            <input type="text" id="wizBirthplace" placeholder="z. B. eine bestimmte Station, ein Haus, ein Rudel …" />
+          </div>
+        </div>
+
+        <div class="wizard-step" data-step="7">
+          <h3>Persönlichkeit</h3>
+          <h4 style="font:400 16px Georgia,serif; color:var(--paper); margin:0 0 12px;">Ideal</h4>
+          <div class="wizard-sub-grid" id="wizIdeals"></div>
+          <div class="wizard-field" style="margin-top:18px;">
+            <label for="wizIdealCustom">Eigenes Ideal (überschreibt die Auswahl, optional)</label>
+            <input type="text" id="wizIdealCustom" placeholder="z. B. „Niemand wird zurückgelassen“" />
+          </div>
+          <h4 style="font:400 16px Georgia,serif; color:var(--paper); margin:28px 0 12px;">Makel</h4>
+          <div class="wizard-sub-grid" id="wizFlaws"></div>
+          <div class="wizard-field" style="margin-top:28px;">
+            <label for="wizBond">Bindung ans Team (optional)</label>
+            <textarea id="wizBond" placeholder="Wem im Team vertraut der Charakter — oder wem misstraut er?"></textarea>
+          </div>
+        </div>
+
+        <div class="wizard-step" data-step="8">
+          <h3>Erscheinung</h3>
+          <h4 style="font:400 16px Georgia,serif; color:var(--paper); margin:0 0 12px;">Besonderes Merkmal</h4>
+          <div class="wizard-sub-grid" id="wizTraits"></div>
+          <div class="wizard-field" style="margin-top:28px;">
+            <label for="wizAppearanceDesc">Erscheinungsbild (optional)</label>
+            <textarea id="wizAppearanceDesc" placeholder="Statur, Kleidung, Auftreten — wie wirkt der Charakter auf andere?"></textarea>
+          </div>
+        </div>
+
+        <div class="wizard-step" data-step="9">
+          <h3>Abschluss</h3>
           <div class="wizard-field">
             <label for="wizName">Name</label>
             <input type="text" id="wizName" placeholder="z. B. Wulfric Voss" />
@@ -203,6 +259,8 @@
             <label for="wizBackground">Kurzer Hintergrund (optional)</label>
             <textarea id="wizBackground" placeholder="Ein paar Sätze zur Herkunft, Motivation oder Rolle im Team …"></textarea>
           </div>
+          <h4 style="font:400 16px Georgia,serif; color:var(--paper); margin:28px 0 12px;">Zusammenfassung</h4>
+          <div id="wizSummary"></div>
         </div>
 
         <div class="wizard-nav">

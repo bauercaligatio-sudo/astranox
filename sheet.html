@@ -56,13 +56,9 @@
 
   <script>
   (function () {
-    var raw = localStorage.getItem("astranox:character");
     var root = document.getElementById("sheetRoot");
-    if (!raw) {
-      root.innerHTML = "<p style='text-align:center;'>Kein Charakter gefunden. <a href='home.html#agenten' style='color:var(--accent-2);'>Jetzt einen erstellen</a>.</p>";
-      return;
-    }
-    var c = JSON.parse(raw);
+
+    function renderCharacter(c) {
     if (c.faction) document.documentElement.dataset.faction = c.faction;
 
     var attrNames = { koerper:"Körper", geschick:"Geschick", verstand:"Verstand", wille:"Wille", praesenz:"Präsenz" };
@@ -84,10 +80,42 @@
       return '<div class="sheet-row"><span>' + skillNames[k] + '</span><strong>' + v + '</strong></div>';
     }).join("") || "<p style='color:var(--muted); font-size:13px;'>Keine Fertigkeitsränge vergeben.</p>";
 
+    function block(title, rows) {
+      if (!rows.length) return "";
+      return '<div class="sheet-block"><h3>' + title + '</h3>' + rows.join("") + '</div>';
+    }
+    function row(label, value) {
+      if (!value) return "";
+      return '<div class="sheet-row"><span>' + label + '</span><strong>' + value + '</strong></div>';
+    }
+    function textBlock(title, text) {
+      if (!text) return "";
+      return '<div class="sheet-block"><h3>' + title + '</h3><p style="margin:0; color:#aaa397;">' + text + '</p></div>';
+    }
+
+    var eq = c.equipment || {};
+    var origin = c.origin || {};
+    var personality = c.personality || {};
+    var appearance = c.appearance || {};
+
+    var equipHtml = block("Ausrüstung", [
+      row("Waffe", eq.weapon), row("Rüstung / Schutz", eq.armor),
+      row("Gadget", eq.gadget), row("Persönlicher Gegenstand", eq.personalItem)
+    ]);
+    var originHtml = block("Herkunft &amp; Startsituation", [
+      row("Rekrutierung", origin.hook), row("Rolle im Team", origin.teamRole), row("Herkunftsort", origin.birthplace)
+    ]);
+    var personalityHtml = block("Persönlichkeit", [
+      row("Ideal", personality.ideal), row("Makel", personality.flaw)
+    ]) + textBlock("Bindung ans Team", personality.bond);
+    var appearanceHtml = block("Erscheinung", [
+      row("Merkmal", appearance.trait)
+    ]) + textBlock("Erscheinungsbild", appearance.description);
+
     root.innerHTML =
       '<div class="sheet-header">' +
         '<div><p class="eyebrow" style="margin-bottom:10px;">Agent des Dominat</p><h1 class="sheet-name">' + c.name + '</h1></div>' +
-        '<div class="sheet-meta">' + c.volk + (c.subfaction ? ' · ' + c.subfaction : '') + '</div>' +
+        '<div class="sheet-meta">' + c.volk + (c.subfaction ? ' · ' + c.subfaction : '') + (origin.teamRole ? '<br>' + origin.teamRole : '') + '</div>' +
       '</div>' +
       '<div class="sheet-vital">' +
         '<div><span class="val">' + c.lp + '</span><span class="lbl">LP</span></div>' +
@@ -98,10 +126,71 @@
         '<div class="sheet-block"><h3>Fertigkeiten</h3>' + skillHtml + '</div>' +
       '</div>' +
       (c.ability ? '<div class="sheet-block"><h3>Besondere Fähigkeit</h3><p style="margin:0; color:#aaa397;">' + c.ability + '</p></div>' : '') +
+      equipHtml + originHtml + personalityHtml + appearanceHtml +
       (c.background ? '<div class="sheet-block"><h3>Hintergrund</h3><p style="margin:0; color:#aaa397;">' + c.background + '</p></div>' : '') +
-      '<button class="btn primary sheet-print" id="printBtn" type="button">Charakterbogen drucken</button>';
+      '<div class="sheet-print" style="display:flex; gap:12px; flex-wrap:wrap;">' +
+        '<button class="btn primary" id="printBtn" type="button">Charakterbogen drucken</button>' +
+        '<button class="btn ghost" id="downloadBtn" type="button">Als Datei speichern (.json)</button>' +
+        '<button class="btn ghost" id="loadBtn" type="button">Charakterdatei laden …</button>' +
+      '</div>' +
+      '<input type="file" id="loadInput" accept="application/json" hidden />';
 
     document.getElementById("printBtn").addEventListener("click", function () { window.print(); });
+    document.getElementById("downloadBtn").addEventListener("click", function () {
+      var blob = new Blob([JSON.stringify(c, null, 2)], { type: "application/json" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      var safeName = (c.name || "agent").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+      a.href = url;
+      a.download = "astranox-" + (safeName || "agent") + ".json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+    document.getElementById("loadBtn").addEventListener("click", function () {
+      document.getElementById("loadInput").click();
+    });
+    document.getElementById("loadInput").addEventListener("change", function (ev) {
+      var file = ev.target.files && ev.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function () {
+        try {
+          var loaded = JSON.parse(reader.result);
+          try { localStorage.setItem("astranox:character", JSON.stringify(loaded)); } catch (e) {}
+          renderCharacter(loaded);
+        } catch (e) {
+          alert("Diese Datei konnte nicht als Astranox-Charakter gelesen werden.");
+        }
+      };
+      reader.readAsText(file);
+    });
+    }
+
+    var raw = localStorage.getItem("astranox:character");
+    if (!raw) {
+      root.innerHTML = "<p style='text-align:center;'>Kein Charakter gefunden. <a href='home.html#agenten' style='color:var(--accent-2);'>Jetzt einen erstellen</a>, oder eine gespeicherte Datei laden:</p>" +
+        "<div style='text-align:center;'><button class='btn ghost' id='loadBtnEmpty' type='button'>Charakterdatei laden …</button><input type='file' id='loadInputEmpty' accept='application/json' hidden /></div>";
+      document.getElementById("loadBtnEmpty").addEventListener("click", function () { document.getElementById("loadInputEmpty").click(); });
+      document.getElementById("loadInputEmpty").addEventListener("change", function (ev) {
+        var file = ev.target.files && ev.target.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function () {
+          try {
+            var loaded = JSON.parse(reader.result);
+            try { localStorage.setItem("astranox:character", JSON.stringify(loaded)); } catch (e) {}
+            renderCharacter(loaded);
+          } catch (e) {
+            alert("Diese Datei konnte nicht als Astranox-Charakter gelesen werden.");
+          }
+        };
+        reader.readAsText(file);
+      });
+      return;
+    }
+    renderCharacter(JSON.parse(raw));
   })();
   </script>
 </body>

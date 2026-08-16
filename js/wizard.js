@@ -7,7 +7,10 @@
 (function () {
   "use strict";
 
-  var STEP_LABELS = ["Volk", "Unterfraktion", "Attribute", "Fertigkeiten", "Fähigkeit", "Abschluss"];
+  var STEP_LABELS = [
+    "Volk", "Unterfraktion", "Attribute", "Fertigkeiten", "Fähigkeit",
+    "Ausrüstung", "Herkunft", "Persönlichkeit", "Erscheinung", "Abschluss"
+  ];
 
   var ATTRIBUTES = [
     { id: "koerper", name: "Körper" },
@@ -80,16 +83,106 @@
     prometheaner: null
   };
 
-  var state = { volkId: null, subId: null, ability: null, attrs: {}, skills: {}, name: "", background: "" };
+  var EQUIPMENT = {
+    nyxaren: {
+      weapons: ["Zeremonienklinge des Hauses — blutgeweihte Nahkampfwaffe, Symbol der Zugehörigkeit.", "Blutlanzen-Pistole — Präzisionswaffe, die geweihtes Blut als Katalysator nutzt."],
+      armor: ["Geweihte Plattenrobe — schwerer Schutz, verlangsamt aber schützt zuverlässig.", "Hofgewand mit verstecktem Panzergeflecht — leicht, unauffällig, weniger Schutz."],
+      gadgets: ["Reliquiensiegel — öffnet Türen und Archive der eigenen Blutlinie.", "Vox-Amulett — verschlüsselte Kommunikation mit dem Haus."]
+    },
+    terraner: {
+      weapons: ["Umgebauter Arbeitslaser — vielseitig, improvisiert, unauffällig.", "Alte Handfeuerwaffe aus Erdzeiten — zuverlässig, schwer zu ersetzen."],
+      armor: ["Geflickter Druckanzug — schützt im Vakuum, mäßiger Kampfschutz.", "Werkstattschürze mit Splitterschutz — leicht, praktisch, wenig Panzerung."],
+      gadgets: ["Multiwerkzeug-Set — Bonus bei improvisierten Reparaturen.", "Familienerbstück — alte Erdtechnologie mit sentimentalem Wert."]
+    },
+    prometheaner: {
+      weapons: ["🔶 Integrierte Klingeneinheit — im Arm verbaute Nahkampfwaffe.", "🔶 Präzisionsemitter — Energiewaffe mit kalkulierter Feuerrate."],
+      armor: ["🔶 Legierter Hybridpanzer — Teil des eigenen Körpers, kaum ablegbar.", "🔶 Tarnbeschichtung — reduziert Erkennbarkeit, wenig physischer Schutz."],
+      gadgets: ["🔶 Direktlink zum Kern — seltene, überwachte Kommunikationsverbindung.", "🔶 Datenkern-Fragment — gespeichertes Wissen aus der Zeit vor der Trennung."]
+    },
+    lykaner: {
+      weapons: ["Knochenspeer — traditionelle Rudelwaffe, verlässlich im Nahkampf.", "Sehnenbogen — lautlose Fernwaffe aus organischem Material."],
+      armor: ["Geflochtene Rindenrüstung — leicht, naturverbunden, mäßiger Schutz.", "Gegerbtes Hautgeschirr — kaum Schutz, maximale Beweglichkeit."],
+      gadgets: ["Rudelamulett — stärkt die Bindung zu anderen Lykanern im Team.", "Getrocknete Kräutermischung — für Rituale und einfache Heilung."]
+    },
+    orks: {
+      weapons: ["🔶 Wuchtklinge — schwere, grob geschmiedete Nahkampfwaffe.", "🔶 Donnerwerfer — primitive, aber brachiale Wurfwaffe."],
+      armor: ["🔶 Schrottplatte — zusammengesetzte Panzerung aus Beute und Eigenbau.", "🔶 Kriegsbemalte Lederrüstung — leicht, symbolisch bedeutsam."],
+      gadgets: ["🔶 Ahnentotem — Erinnerung an den eigenen Ursprung.", "🔶 Kriegstrommel-Fragment — für rituelle Vor-Kampf-Zeremonien."]
+    },
+    aeldir: {
+      weapons: ["Klingenarm des Exoskeletts — in die Rüstung integrierte Nahkampfwaffe.", "Resonanzwerfer — präzise Fernwaffe, kastenabhängig reguliert."],
+      armor: ["Kastenexoskelett (Standard) — gleicht körperliche Schwäche aus, sichtbares Kastensymbol.", "Leichtes Reiseexoskelett — weniger Schutz, für Diplomatie und Distanzreisen gedacht."],
+      gadgets: ["Archivkristall — speichert persönliche Erinnerungen an Aethyr.", "Kastenweihe-Siegel — bestätigt Rang und Herkunft gegenüber anderen Aeldir."]
+    }
+  };
+
+  var RECRUITMENT_HOOKS = [
+    { id: "freiwillig", name: "Freiwillige Meldung", desc: "Aus Überzeugung oder Ehrgeiz dem Programm beigetreten." },
+    { id: "politisch", name: "Politischer Handel", desc: "Die eigene Führung hat den Platz im Team ausgehandelt." },
+    { id: "schuld", name: "Schuld beim Dominat", desc: "Eine Verpflichtung oder Strafe, die abgegolten werden muss." },
+    { id: "zwang", name: "Zwangsrekrutierung", desc: "Ohne echte Wahl in das Programm gezwungen." },
+    { id: "erbe", name: "Familiäres Erbe", desc: "Folgt einer Tradition oder dem Vermächtnis eines Vorfahren." },
+    { id: "flucht", name: "Flucht nach vorn", desc: "Das Programm als Ausweg aus einer schwierigen Vergangenheit." }
+  ];
+
+  var TEAM_ROLES = [
+    { id: "kaempfer", name: "Kämpfer·in", desc: "Vorne dabei, wenn es hart auf hart kommt." },
+    { id: "vermittler", name: "Vermittler·in", desc: "Hält das Team und seine Kontakte zusammen." },
+    { id: "aufklaerer", name: "Aufklärer·in", desc: "Geht voraus, sammelt Informationen." },
+    { id: "techniker", name: "Techniker·in", desc: "Hält Ausrüstung und Systeme am Laufen." },
+    { id: "heiler", name: "Heiler·in / Sanitäter·in", desc: "Versorgt Wunden, körperlich wie seelisch." },
+    { id: "stratege", name: "Stratege / Strategin", desc: "Plant, koordiniert, behält den Überblick." }
+  ];
+
+  var IDEALS = [
+    { id: "gerechtigkeit", name: "Gerechtigkeit", desc: "Unrecht soll benannt und ausgeglichen werden." },
+    { id: "rache", name: "Rache", desc: "Eine offene Rechnung treibt jeden Schritt an." },
+    { id: "wissen", name: "Wissen", desc: "Verstehen ist wichtiger als Sicherheit." },
+    { id: "loyalitaet", name: "Loyalität", desc: "Das eigene Volk oder Haus steht über allem." },
+    { id: "freiheit", name: "Freiheit", desc: "Keine Kette, kein Kastenzwang, keine Order ohne Widerspruch." },
+    { id: "ueberleben", name: "Überleben des Volkes", desc: "Das große Ganze zählt mehr als der Einzelne." },
+    { id: "ruhm", name: "Ruhm", desc: "Die eigene Geschichte soll erzählt werden." },
+    { id: "erloesung", name: "Erlösung", desc: "Eine alte Schuld soll wettgemacht werden." }
+  ];
+
+  var FLAWS = [
+    { id: "misstrauen", name: "Misstrauen", desc: "Vertraut nur schwer, selbst engen Verbündeten." },
+    { id: "kontrollverlust", name: "Kontrollverlust", desc: "Unter Druck drohen Instinkt oder Blutdurst die Oberhand zu gewinnen." },
+    { id: "verlustangst", name: "Verlustangst", desc: "Die Angst, wieder jemanden zu verlieren, prägt jede Entscheidung." },
+    { id: "arroganz", name: "Arroganz", desc: "Unterschätzt gerne, was unter der eigenen Kaste, Klasse oder Herkunft steht." },
+    { id: "schuldgefuehl", name: "Schuldgefühl", desc: "Eine vergangene Tat lässt sich nicht abschütteln." },
+    { id: "fanatismus", name: "Fanatismus", desc: "Glaube oder Ideologie lassen wenig Raum für Kompromisse." },
+    { id: "skrupellosigkeit", name: "Skrupellosigkeit", desc: "Der Zweck heiligt fast jedes Mittel." },
+    { id: "naivitaet", name: "Naivität", desc: "Glaubt zu leicht an das Gute in fremden Absichten." }
+  ];
+
+  var TRAITS = [
+    { id: "narbe", name: "Sichtbare Narbe", desc: "Erinnerung an ein prägendes Ereignis." },
+    { id: "tattoo", name: "Tätowierung / Brandmarke", desc: "Zeichen der Herkunft, des Ranges oder einer Strafe." },
+    { id: "abzeichen", name: "Sichtbares Haus-/Kastensymbol", desc: "Zugehörigkeit ist auf den ersten Blick erkennbar." },
+    { id: "implantat", name: "Prothese / Implantat", desc: "Technischer oder ritueller Ersatz eines Körperteils." },
+    { id: "augen", name: "Ungewöhnliche Augenfarbe", desc: "Fällt selbst unter dem eigenen Volk auf." },
+    { id: "keins", name: "Kein besonderes Merkmal", desc: "Bewusst unauffällig." }
+  ];
+
+  var state = {
+    volkId: null, subId: null, ability: null, attrs: {}, skills: {},
+    equipment: { weapon: null, armor: null, gadget: null, personalItem: "" },
+    origin: { hook: null, teamRole: null, birthplace: "" },
+    personality: { ideal: null, idealCustom: "", flaw: null, bond: "" },
+    appearance: { trait: null, description: "" },
+    name: "", background: ""
+  };
   var current = 0;
 
   function volkList() { return Object.keys(window.factions || {}); }
   function volkData(key) { return window.factions[key]; }
   function subData(key) { return SUBFACTIONS[key]; }
   function hasSub(key) { var s = subData(key); return !!(s && s.items && s.items.length); }
+  function equipData(key) { return EQUIPMENT[key] || null; }
 
   function visibleSteps() {
-    var steps = [0, 1, 2, 3, 4, 5];
+    var steps = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
     if (!state.volkId || !hasSub(state.volkId)) steps = steps.filter(function (s) { return s !== 1 && s !== 4; });
     return steps;
   }
@@ -119,8 +212,11 @@
     el.querySelectorAll("[data-volk]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         var v = btn.dataset.volk;
-        if (v !== state.volkId) { state.volkId = v; state.subId = null; state.ability = null; }
-        renderVolkPicks(); renderSubPicks(); renderAbilities(); renderStepsBar();
+        if (v !== state.volkId) {
+          state.volkId = v; state.subId = null; state.ability = null;
+          state.equipment = { weapon: null, armor: null, gadget: null, personalItem: state.equipment.personalItem };
+        }
+        renderVolkPicks(); renderSubPicks(); renderAbilities(); renderEquipment(); renderStepsBar();
       });
     });
   }
@@ -228,9 +324,114 @@
     b.classList.toggle("is-over", remaining < 0);
   }
 
+  /* ---- Ausrüstung ---- */
+  function renderEquipGroup(containerId, options, field) {
+    var wrap = document.getElementById(containerId);
+    if (!options || !options.length) { wrap.innerHTML = ""; return; }
+    wrap.innerHTML = options.map(function (opt, i) {
+      var sel = state.equipment[field] === opt ? "is-selected" : "";
+      return '<button type="button" class="wizard-sub-card ' + sel + '" data-eq="' + i + '"><p style="margin:0;">' + opt + "</p></button>";
+    }).join("");
+    wrap.querySelectorAll("[data-eq]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        state.equipment[field] = options[Number(btn.dataset.eq)];
+        renderEquipGroup(containerId, options, field);
+      });
+    });
+  }
+
+  function renderEquipment() {
+    var note = document.getElementById("wizNoEquip");
+    var body = document.getElementById("wizEquipBody");
+    var data = state.volkId ? equipData(state.volkId) : null;
+    if (!data) { body.hidden = true; note.hidden = false; return; }
+    note.hidden = true; body.hidden = false;
+    renderEquipGroup("wizEquipWeapon", data.weapons, "weapon");
+    renderEquipGroup("wizEquipArmor", data.armor, "armor");
+    renderEquipGroup("wizEquipGadget", data.gadgets, "gadget");
+    var personal = document.getElementById("wizEquipPersonal");
+    if (personal && personal.value !== state.equipment.personalItem) personal.value = state.equipment.personalItem;
+  }
+
+  /* ---- Herkunft / Persönlichkeit / Erscheinung: generische Auswahl-Listen ---- */
+  function renderPickList(containerId, items, field, groupObj) {
+    var wrap = document.getElementById(containerId);
+    wrap.innerHTML = items.map(function (it) {
+      var sel = groupObj[field] === it.id ? "is-selected" : "";
+      return '<button type="button" class="wizard-sub-card ' + sel + '" data-pick="' + it.id + '"><h4>' + it.name + "</h4><p>" + it.desc + "</p></button>";
+    }).join("");
+    wrap.querySelectorAll("[data-pick]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        groupObj[field] = btn.dataset.pick;
+        renderPickList(containerId, items, field, groupObj);
+      });
+    });
+  }
+
+  function renderOrigin() {
+    renderPickList("wizHooks", RECRUITMENT_HOOKS, "hook", state.origin);
+    renderPickList("wizTeamRoles", TEAM_ROLES, "teamRole", state.origin);
+    var el = document.getElementById("wizBirthplace");
+    if (el && el.value !== state.origin.birthplace) el.value = state.origin.birthplace;
+  }
+
+  function renderPersonality() {
+    renderPickList("wizIdeals", IDEALS, "ideal", state.personality);
+    renderPickList("wizFlaws", FLAWS, "flaw", state.personality);
+    var custom = document.getElementById("wizIdealCustom");
+    if (custom && custom.value !== state.personality.idealCustom) custom.value = state.personality.idealCustom;
+    var bond = document.getElementById("wizBond");
+    if (bond && bond.value !== state.personality.bond) bond.value = state.personality.bond;
+  }
+
+  function renderAppearance() {
+    renderPickList("wizTraits", TRAITS, "trait", state.appearance);
+    var desc = document.getElementById("wizAppearanceDesc");
+    if (desc && desc.value !== state.appearance.description) desc.value = state.appearance.description;
+  }
+
+  /* ---- Abschluss / Zusammenfassung ---- */
+  function findById(list, id) { return list.filter(function (i) { return i.id === id; })[0]; }
+
+  function renderSummary() {
+    var wrap = document.getElementById("wizSummary");
+    if (!wrap) return;
+    var f = state.volkId ? volkData(state.volkId) : null;
+    var s = state.volkId ? subData(state.volkId) : null;
+    var subItem = s && s.items.find(function (i) { return i.id === state.subId; });
+    var hook = findById(RECRUITMENT_HOOKS, state.origin.hook);
+    var role = findById(TEAM_ROLES, state.origin.teamRole);
+    var ideal = findById(IDEALS, state.personality.ideal);
+    var flaw = findById(FLAWS, state.personality.flaw);
+    var trait = findById(TRAITS, state.appearance.trait);
+
+    var rows = [
+      ["Volk", f ? f.title : "—"],
+      ["Unterfraktion", subItem ? subItem.name : "—"],
+      ["Besondere Fähigkeit", state.ability || "—"],
+      ["Waffe", state.equipment.weapon || "—"],
+      ["Rüstung / Schutz", state.equipment.armor || "—"],
+      ["Ausrüstung", state.equipment.gadget || "—"],
+      ["Rekrutierung", hook ? hook.name : "—"],
+      ["Rolle im Team", role ? role.name : "—"],
+      ["Ideal", state.personality.idealCustom ? state.personality.idealCustom : (ideal ? ideal.name : "—")],
+      ["Makel", flaw ? flaw.name : "—"],
+      ["Merkmal", trait ? trait.name : "—"]
+    ];
+
+    wrap.innerHTML = rows.map(function (r) {
+      return '<div class="wizard-attr-row"><span class="name">' + r[0] + '</span><span style="text-align:right; color:var(--muted); font-size:13px; max-width:60%;">' + r[1] + "</span></div>";
+    }).join("");
+  }
+
   function showStep(i) {
     document.querySelectorAll(".wizard-step").forEach(function (p) { p.classList.toggle("is-active", Number(p.dataset.step) === i); });
     current = i;
+    if (i === 5) renderEquipment();
+    if (i === 6) renderOrigin();
+    if (i === 7) renderPersonality();
+    if (i === 8) renderAppearance();
+    if (i === 9) renderSummary();
     renderStepsBar();
     updateNav();
   }
@@ -240,6 +441,9 @@
     if (current === 1) return !hasSub(state.volkId) || !!state.subId;
     if (current === 2) return attrSpent() <= CREATION.attrPool;
     if (current === 3) return skillSpent() <= CREATION.skillPool;
+    if (current === 5) { var d = state.volkId ? equipData(state.volkId) : null; return !d || (!!state.equipment.weapon && !!state.equipment.armor && !!state.equipment.gadget); }
+    if (current === 6) return !!state.origin.hook && !!state.origin.teamRole;
+    if (current === 7) return !!state.personality.ideal && !!state.personality.flaw;
     return true;
   }
 
@@ -268,16 +472,43 @@
   function finish() {
     state.name = document.getElementById("wizName").value.trim() || "Unbenannter Agent";
     state.background = document.getElementById("wizBackground").value.trim();
+    state.equipment.personalItem = (document.getElementById("wizEquipPersonal") || {}).value || "";
+    state.origin.birthplace = (document.getElementById("wizBirthplace") || {}).value || "";
+    state.personality.idealCustom = (document.getElementById("wizIdealCustom") || {}).value || "";
+    state.personality.bond = (document.getElementById("wizBond") || {}).value || "";
+    state.appearance.description = (document.getElementById("wizAppearanceDesc") || {}).value || "";
+
     var lp = 10 + state.attrs.koerper * 3 + state.attrs.geschick * 2;
     var gg = 10 + state.attrs.verstand * 2 + state.attrs.wille * 3 + state.attrs.praesenz;
     var f = volkData(state.volkId);
     var s = subData(state.volkId);
     var item = s && s.items.find(function (i) { return i.id === state.subId; });
+    var hook = findById(RECRUITMENT_HOOKS, state.origin.hook);
+    var role = findById(TEAM_ROLES, state.origin.teamRole);
+    var ideal = findById(IDEALS, state.personality.ideal);
+    var flaw = findById(FLAWS, state.personality.flaw);
+    var trait = findById(TRAITS, state.appearance.trait);
+
     var payload = {
       name: state.name, background: state.background, volk: f.title,
       subfaction: item ? item.name : "", ability: state.ability,
       attrs: state.attrs, skills: state.skills, lp: lp, gg: gg,
-      faction: state.volkId, createdAt: new Date().toISOString()
+      faction: state.volkId, createdAt: new Date().toISOString(),
+      equipment: {
+        weapon: state.equipment.weapon, armor: state.equipment.armor,
+        gadget: state.equipment.gadget, personalItem: state.equipment.personalItem
+      },
+      origin: {
+        hook: hook ? hook.name : "", teamRole: role ? role.name : "",
+        birthplace: state.origin.birthplace
+      },
+      personality: {
+        ideal: state.personality.idealCustom || (ideal ? ideal.name : ""),
+        flaw: flaw ? flaw.name : "", bond: state.personality.bond
+      },
+      appearance: {
+        trait: trait ? trait.name : "", description: state.appearance.description
+      }
     };
     try { localStorage.setItem("astranox:character", JSON.stringify(payload)); } catch (e) {}
     window.location.href = "sheet.html";
@@ -285,7 +516,8 @@
 
   function preselectVolk(key) {
     state.volkId = key; state.subId = null; state.ability = null;
-    renderVolkPicks(); renderSubPicks(); renderAbilities(); renderStepsBar();
+    state.equipment = { weapon: null, armor: null, gadget: null, personalItem: "" };
+    renderVolkPicks(); renderSubPicks(); renderAbilities(); renderEquipment(); renderStepsBar();
     var vis = visibleSteps();
     showStep(vis[Math.min(1, vis.length - 1)]);
     document.getElementById("wizard").scrollIntoView({ behavior: "smooth" });
