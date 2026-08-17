@@ -277,6 +277,42 @@ roster.querySelectorAll('.roster-card').forEach(btn => btn.addEventListener('cli
   if (window.AstranoxWizard) window.AstranoxWizard.preselectVolk(btn.dataset.faction);
 }));
 
+// Klangarchiv: alle Tracks (Thema + jedes Volk) an einem Ort, einzeln
+// wähl- und abspielbar. Nutzt dieselbe Crossfade-Logik wie die
+// restlichen Audio-Steuerelemente auf der Seite.
+const audioLibrary = document.getElementById('audioLibrary');
+const libraryTracks = [{ key: 'theme', title: theme.title.replace('Astranox — ', ''), audio: theme.audio, volume: theme.volume }]
+  .concat(Object.entries(factions).map(([key, f]) => ({ key, title: f.title, audio: f.audio, volume: f.volume })));
+audioLibrary.innerHTML = libraryTracks.map((t, i) => `
+  <button class="audio-track" type="button" data-key="${t.key}">
+    <span class="audio-track-index">${String(i + 1).padStart(2, '0')}</span>
+    <span class="audio-track-title">${t.title}</span>
+    <span class="audio-track-state" aria-hidden="true">▶</span>
+  </button>`).join('');
+
+function syncAudioLibraryUI() {
+  audioLibrary.querySelectorAll('.audio-track').forEach(btn => {
+    const isCurrent = soundEnabled && nowPlayingKey === btn.dataset.key && !activeAudio.paused;
+    btn.classList.toggle('is-playing', isCurrent);
+    btn.querySelector('.audio-track-state').textContent = isCurrent ? 'Ⅱ' : '▶';
+  });
+}
+audioLibrary.querySelectorAll('.audio-track').forEach(btn => btn.addEventListener('click', () => {
+  const t = libraryTracks.find(x => x.key === btn.dataset.key);
+  if (!soundEnabled) setSoundEnabled(true, false);
+  if (nowPlayingKey === t.key && !activeAudio.paused) {
+    activeAudio.pause();
+    syncAudioUI(false);
+  } else {
+    crossfadeTo(t.key, t.audio, t.volume, t.title);
+  }
+  setTimeout(syncAudioLibraryUI, 60);
+}));
+// Bei jedem Wechsel woanders auf der Seite (Dock, Volk-Karte, Inline-Button)
+// soll die Klangarchiv-Liste ebenfalls den aktuellen Status zeigen.
+[dockToggle, audioInline, soundToggle].forEach(el => el.addEventListener('click', () => setTimeout(syncAudioLibraryUI, 60)));
+roster.querySelectorAll('.roster-card').forEach(btn => btn.addEventListener('click', () => setTimeout(syncAudioLibraryUI, 60)));
+
 artBg.style.backgroundImage = `url('${factions.nyxaren.image}')`;
 renderFaction('nyxaren');
 

@@ -514,15 +514,29 @@
     window.location.href = "sheet.html";
   }
 
+  function openWizard() {
+    var intro = document.getElementById("agentsIntro");
+    var panel = document.getElementById("wizard");
+    if (intro) intro.hidden = true;
+    if (panel) panel.hidden = false;
+  }
+  function closeWizard() {
+    var intro = document.getElementById("agentsIntro");
+    var panel = document.getElementById("wizard");
+    if (intro) intro.hidden = false;
+    if (panel) panel.hidden = true;
+  }
+
   function preselectVolk(key) {
     state.volkId = key; state.subId = null; state.ability = null;
     state.equipment = { weapon: null, armor: null, gadget: null, personalItem: "" };
     renderVolkPicks(); renderSubPicks(); renderAbilities(); renderEquipment(); renderStepsBar();
     var vis = visibleSteps();
+    openWizard();
     showStep(vis[Math.min(1, vis.length - 1)]);
-    document.getElementById("wizard").scrollIntoView({ behavior: "smooth" });
+    document.getElementById("wizard").scrollIntoView({ behavior: "smooth", block: "start" });
   }
-  window.AstranoxWizard = { preselectVolk: preselectVolk };
+  window.AstranoxWizard = { preselectVolk: preselectVolk, openWizard: openWizard, closeWizard: closeWizard };
 
   document.addEventListener("DOMContentLoaded", function () {
     ensureDefaults();
@@ -530,5 +544,7 @@
     showStep(0);
     document.getElementById("wizBack").addEventListener("click", goBack);
     document.getElementById("wizNext").addEventListener("click", goNext);
+    var backToRoster = document.getElementById("wizBackToRoster");
+    if (backToRoster) backToRoster.addEventListener("click", closeWizard);
   });
 })();

@@ -122,15 +122,16 @@
     </section>
 
     <section class="section dominat-section" aria-labelledby="dominat-heading">
-      <div class="dominat-visual reveal" aria-hidden="true">
-        <div class="council-ring"></div>
-        <div class="seat s1">N</div><div class="seat s2">L</div><div class="seat s3">A</div><div class="seat s4">O</div><div class="seat s5">T</div>
-        <div class="throne-mark"></div>
-      </div>
+      <figure class="dominat-visual reveal">
+        <img src="images/scenes/dominat-rat.png" alt="Vertreter mehrerer Völker warten vor der Ratskammer des Dominat" loading="lazy" />
+        <figcaption>Vor der Ratskammer. Man wartet, man redet leise, man beobachtet sich gegenseitig — bevor irgendjemand die Tür öffnet.</figcaption>
+      </figure>
       <div class="dominat-copy reveal">
         <p class="eyebrow">Archiv 03 · Herrschaft</p>
         <h2 id="dominat-heading">Das Dominat ist Bühne,<br>nicht Motor.</h2>
-        <p>Formal verteilt der galaktische Rat Gesetze, Ressourcen und vermittelt zwischen den Völkern. Informell kontrolliert der Nyxaren-Imperator die eigentlichen Entscheidungen durch Militär, Wirtschaft und die Drohung eines neuen Krieges.</p>
+        <p>Der Name ist Programm, mehr oder weniger bewusst gewählt: Er lehnt sich an die späte, autoritäre Phase des Römischen Reichs an, in der der Kaiser offen als absoluter Herrscher auftrat, statt wie zuvor wenigstens den Schein der Mitbestimmung zu wahren. Ein nüchterner, unverblümt imperialer Begriff — und ehrlicher, als es den meisten Mitgliedern lieb ist.</p>
+        <p>Formal sitzen fünf Völker mit vollem Stimmrecht am Tisch: Nyxaren, Lykaner, Aeldir, Orks und, seit 312 n.Z., auch die Terraner — wenn auch nur widerwillig geduldet, nicht wirklich als gleichwertig akzeptiert. Der Rat verteilt Gesetze, vermittelt zwischen den Völkern, entscheidet über Ressourcen. Klingt nach echter Macht. Ist es aber nur auf dem Papier.</p>
+        <p>Denn informell läuft alles über eine einzige Adresse: den Nyxaren-Imperator. Militär, Wirtschaft, die stille Drohung eines neuen Krieges — er kontrolliert die eigentlichen Entscheidungen, ganz gleich, was im Rat beschlossen wird. Um genau diesen brüchigen Frieden vor Ort zu sichern — Grenzkonflikte, Sabotage, aufflammender Extremismus —, entsendet das Dominat gemischte Agententeams. Genau dort setzt die Charaktererschaffung an.</p>
         <div class="quote-block">
           <span>Grundprinzip</span>
           <blockquote>„Frieden“ bedeutet im Dominat nicht Einigung. Er bedeutet, dass niemand stark genug ist, den Status quo zu brechen.</blockquote>
@@ -147,27 +148,28 @@
     </section>
 
     <section class="section agents-section" id="agenten" aria-labelledby="agents-heading">
-      <div class="agents-card reveal">
+      <div class="agents-card reveal" id="agentsCard">
         <div class="agents-orbit" aria-hidden="true"></div>
-        <div class="agents-copy">
-          <p class="eyebrow">Spielbeginn · Agentenprogramm</p>
-          <h2 id="agents-heading">Ihr seid die Sollbruchstelle<br>des Systems.</h2>
-          <p>Das Dominat entsendet gemischte Agententeams dorthin, wo der Frieden bereits Risse zeigt: Grenzkonflikte, Sabotage, Verschwörungen und aufflammender Extremismus. Jeder Charakter bringt die Geschichte, Loyalität und Vorurteile seines Volkes mit.</p>
-          <p class="agents-note">Das Team ist kein harmonisches Bündnis. Es ist ein politisches Experiment unter Einsatzbedingungen.</p>
+
+        <div class="agents-intro" id="agentsIntro">
+          <div class="agents-copy">
+            <p class="eyebrow">Spielbeginn · Agentenprogramm</p>
+            <h2 id="agents-heading">Ihr seid die Sollbruchstelle<br>des Systems.</h2>
+            <p>Das Dominat entsendet gemischte Agententeams dorthin, wo der Frieden bereits Risse zeigt: Grenzkonflikte, Sabotage, Verschwörungen und aufflammender Extremismus. Jeder Charakter bringt die Geschichte, Loyalität und Vorurteile seines Volkes mit.</p>
+            <p class="agents-note">Das Team ist kein harmonisches Bündnis. Es ist ein politisches Experiment unter Einsatzbedingungen.</p>
+          </div>
+          <div class="agents-roster" id="agentsRoster" aria-label="Spielbare Völker"></div>
         </div>
-        <div class="agents-roster" id="agentsRoster" aria-label="Spielbare Völker"></div>
-      </div>
 
-      <div class="wizard-panel" id="wizard">
-        <p class="eyebrow">Charakter-Editor</p>
-        <h2 style="font-size:clamp(34px,4vw,54px); margin-bottom:40px;">Erschafft euren Agenten.</h2>
+        <div class="wizard-panel" id="wizard" hidden>
+          <button class="wizard-back-link" id="wizBackToRoster" type="button">← Anderes Volk wählen</button>
 
-        <div class="wizard-steps" id="wizardSteps"></div>
+          <div class="wizard-steps" id="wizardSteps"></div>
 
-        <div class="wizard-step is-active" data-step="0">
-          <h3>Volk wählen</h3>
-          <div class="wizard-pick-grid" id="wizPickVolk"></div>
-        </div>
+          <div class="wizard-step is-active" data-step="0">
+            <h3>Volk wählen</h3>
+            <div class="wizard-pick-grid" id="wizPickVolk"></div>
+          </div>
 
         <div class="wizard-step" data-step="1">
           <h3 id="wizSubTitle">Unterfraktion wählen</h3>
@@ -267,7 +269,17 @@
           <button class="btn ghost" id="wizBack" type="button">Zurück</button>
           <button class="btn primary" id="wizNext" type="button">Weiter</button>
         </div>
+        </div>
       </div>
+    </section>
+
+    <section class="section audio-library-section" id="klangarchiv" aria-labelledby="audio-library-heading">
+      <div class="section-head reveal">
+        <p class="eyebrow">Archiv 05 · Klang</p>
+        <h2 id="audio-library-heading">Das Klangarchiv.</h2>
+        <p>Alle Hintergrundtracks des Settings, an einem Ort. Auswählen, abspielen, im Hintergrund weiterlaufen lassen.</p>
+      </div>
+      <div class="audio-library reveal" id="audioLibrary" aria-label="Alle Klangspuren"></div>
     </section>
   </main>
 
