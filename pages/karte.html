@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="de" data-faction="nyxaren">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0a0a0b" />
+  <title>Galaxiekarte — Astranox</title>
+  <meta name="description" content="Meridian, die sechs Kernwelten und das Sprungtor-Netzwerk des Dominat — schematisch und interaktiv." />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    .map-hero { position:relative; min-height:56vh; display:flex; align-items:flex-end; overflow:hidden; border-bottom:1px solid var(--line); background:
+      radial-gradient(ellipse 60% 50% at 55% 40%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%), var(--bg); }
+    .map-hero-stars { position:absolute; inset:0; opacity:.6; }
+    .map-hero-inner { position:relative; z-index:2; width:min(var(--max), calc(100% - 48px)); margin:0 auto; padding-bottom:70px; }
+    .map-hero-index { font:400 11px Georgia,serif; letter-spacing:.16em; color:var(--accent-2); margin:0 0 18px; }
+    .map-hero-inner h1 { font-family:"Palatino Linotype",Palatino,Georgia,serif; font-weight:400; font-size:clamp(48px,8vw,110px); line-height:.88; letter-spacing:-.03em; }
+    .map-hero-tagline { font:italic 18px/1.6 Georgia,serif; color:#d6cdbb; max-width:56ch; margin:22px 0 0; }
+
+    .map-subnav { position:sticky; top:76px; z-index:20; background:rgba(8,8,9,.92); backdrop-filter:blur(14px); border-bottom:1px solid var(--line); overflow-x:auto; }
+    .map-subnav-list { display:flex; gap:34px; width:min(var(--max), calc(100% - 48px)); margin:0 auto; padding:16px 0; list-style:none; white-space:nowrap; }
+    .map-subnav-list a { text-decoration:none; color:var(--muted); text-transform:uppercase; font-size:10px; letter-spacing:.14em; transition:color .25s; }
+    .map-subnav-list a:hover { color:var(--text); }
+
+    .map-body { width:min(var(--max), calc(100% - 48px)); margin:0 auto; }
+    .map-section { padding:80px 0; border-bottom:1px solid var(--line); scroll-margin-top:140px; }
+    .map-section:last-child { border-bottom:0; }
+    .map-section h2 { font-size:clamp(34px,4.2vw,54px); line-height:.95; margin-bottom:26px; max-width:20ch; }
+    .map-section > p { color:#aaa397; max-width:74ch; margin:0 0 18px; }
+    .map-section p strong { color:var(--paper); font-weight:400; }
+
+    .map-shell { display:grid; grid-template-columns:1.5fr 1fr; gap:36px; align-items:start; }
+    .map-stage { position:relative; border:1px solid var(--line); background:#0b0b0d; aspect-ratio:1000/640; overflow:hidden; }
+    .map-stage svg { width:100%; height:100%; display:block; }
+
+    .map-node circle.core { fill:color-mix(in srgb, var(--paper) 92%, transparent); stroke:var(--bg); stroke-width:2; }
+    .map-node circle.halo { fill:none; stroke:var(--accent-2); stroke-width:1; opacity:.45; }
+    .map-node text { font:400 11px Georgia,serif; fill:var(--muted); letter-spacing:.02em; pointer-events:none; }
+    .map-node { cursor:pointer; }
+    .map-node:hover circle.core, .map-node.is-active circle.core { fill:var(--accent-2); }
+    .map-node:hover text, .map-node.is-active text { fill:var(--paper); }
+    .map-node.is-active circle.halo { opacity:1; stroke-width:1.6; }
+    .map-node.node-hanse circle.core { r:3.2; fill:var(--faint); }
+    .map-node.node-hanse:hover circle.core, .map-node.node-hanse.is-active circle.core { fill:var(--accent-2); }
+
+    .map-gate { fill:none; stroke:var(--line); stroke-width:1.2; transition:stroke .3s, opacity .3s, stroke-width .3s; }
+    .map-gate.is-lit { stroke:var(--accent-2); opacity:.9; stroke-width:1.8; }
+    .map-gate.weak { stroke-dasharray:2 5; opacity:.55; }
+    .map-core-zone { fill:color-mix(in srgb, #000 70%, var(--accent)); opacity:.5; }
+
+    .map-panel { border:1px solid var(--line); padding:30px; min-height:420px; background:rgba(255,255,255,.015); }
+    .map-panel .kicker { font:400 11px Georgia,serif; letter-spacing:.16em; text-transform:uppercase; color:var(--accent-2); margin:0 0 10px; }
+    .map-panel h3 { font-size:clamp(26px,3vw,36px); margin:0 0 12px; }
+    .map-panel .tagline { font:italic 15px/1.55 Georgia,serif; color:#d6cdbb; margin:0 0 20px; }
+    .map-panel p { color:#aaa397; font-size:14px; line-height:1.7; margin:0 0 14px; }
+    .map-panel .map-facts { display:grid; gap:0; border-top:1px solid var(--line); margin:18px 0; }
+    .map-facts div { display:flex; justify-content:space-between; gap:14px; padding:10px 0; border-bottom:1px solid var(--line); font-size:12.5px; }
+    .map-facts span { color:var(--faint); text-transform:uppercase; letter-spacing:.1em; font-size:10px; }
+    .map-facts strong { color:var(--paper); font-weight:400; text-align:right; }
+    .map-panel .btn { margin-top:8px; }
+
+    .map-legend { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:24px; margin-top:34px; }
+    .map-legend-item { display:flex; gap:14px; align-items:flex-start; }
+    .map-legend-swatch { flex:0 0 auto; width:40px; height:14px; margin-top:4px; }
+    .map-legend-item p { margin:0; font-size:13px; color:#8b8579; }
+    .map-legend-item strong { display:block; color:var(--paper); font-weight:400; margin-bottom:4px; font-size:14px; }
+
+    .swatch-strong { border-top:2px solid var(--accent-2); }
+    .swatch-weak { border-top:2px dashed var(--faint); }
+    .swatch-node { border-radius:50%; width:14px; height:14px; background:var(--accent-2); margin-top:1px; }
+    .swatch-node.small { width:8px; height:8px; background:var(--faint); margin-top:5px; }
+
+    @media (max-width:900px) {
+      .map-shell { grid-template-columns:1fr; }
+      .map-panel { min-height:0; }
+    }
+  </style>
+</head>
+<body data-audio-src="../audio/theme.mp3" data-audio-volume="0.7">
+  <div class="grain" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <header class="site-header" id="top">
+    <a class="brand" href="../home.html#top" aria-label="Astranox Startseite">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span>ASTRANOX</span>
+    </a>
+    <nav class="main-nav" aria-label="Hauptnavigation">
+      <a href="../home.html#welt">Welt</a>
+      <a href="../home.html#voelker">Völker</a>
+      <a href="karte.html">Karte</a>
+      <a href="../home.html#zeitlinie">Zeitlinie</a>
+      <a href="../home.html#agenten">Agenten</a>
+    </nav>
+    <button class="sound-toggle" id="soundToggle" type="button" aria-pressed="false">
+      <span class="sound-dot"></span>
+      <span class="sound-label">Klang aktivieren</span>
+    </button>
+  </header>
+
+  <main>
+    <section class="map-hero">
+      <div class="map-hero-inner reveal">
+        <p class="map-hero-index">Archiv 06 · Kartografie</p>
+        <h1>Eine Galaxie,<br><em>kartografiert von Fremden.</em></h1>
+        <p class="map-hero-tagline">Keines der sechs Völker hat die Sprungtore gebaut, die diese Karte überhaupt erst befahrbar machen. Man weiß, wie man sie benutzt — nicht, wer sie hinterlassen hat.</p>
+      </div>
+    </section>
+
+    <nav class="map-subnav" aria-label="Kartenabschnitte">
+      <ul class="map-subnav-list">
+        <li><a href="#uebersicht">Übersicht</a></li>
+        <li><a href="#interaktiv">Die Karte</a></li>
+        <li><a href="#sprungtore">Sprungtor-Netzwerk</a></li>
+        <li><a href="#legende">Legende</a></li>
+      </ul>
+    </nav>
+
+    <div class="map-body">
+      <section class="map-section" id="uebersicht">
+        <h2>Eine Balkenspirale, kein Zufallshaufen.</h2>
+        <p>Die Galaxie des Dominat folgt dem Vorbild einer realen Balkenspirale, Milchstraße-artig: ein gemiedenes, lebensfeindliches Zentrum, umgeben von mehreren Spiralarmen. Die Positionen der Kernwelten sind historisch gewachsen, nicht symmetrisch verteilt — und genau dieses Ergebnis bildet zugleich die Machtgeografie des Settings ab. Wer nah an <strong>Meridian</strong> und dem inneren Arm sitzt, sitzt auch nah an der Macht. Wer außen liegt, liegt außen — politisch wie im wörtlichen Sinne.</p>
+        <p><strong>Nyxar</strong> liegt im inneren, dicht vernetzten Arm, nah an Meridian — passend zur Vormachtstellung der Nyxaren. Das <strong>Sonnensystem</strong> und <strong>Fenwyld</strong> liegen in erreichbarer Nähe dazu, historisch die Region, in die die frühe menschliche Raumfahrt einst expandierte. <strong>Kharn</strong> dagegen liegt bewusst am Rand eines äußeren Arms, schwach angebunden — passend zur Rolle der Orks als späte, instrumentalisierte Schöpfung des Imperiums. Das <strong>Aeldir-Kolonieschiff</strong> ankert am äußersten Rand der Galaxie, dort, wo die Flotte einst einflog. Und <strong>Der Wanderer</strong>, der Sitz des Prometheaner-Kerns, ist der einzige Punkt auf dieser Karte, der sich überhaupt bewegt.</p>
+      </section>
+
+      <section class="map-section" id="interaktiv">
+        <h2>Die Kernwelten.</h2>
+        <p>Ein Klick auf einen Punkt öffnet sein Archiv. Leuchtende Linien sind feste Sprungtor-Routen — Stunden bis wenige Tage Reisezeit. Gepunktete, blasse Linien bedeuten schwache oder fehlende Anbindung — Wochen bis Monate mit konventionellem Antrieb.</p>
+        <div class="map-shell">
+          <div class="map-stage reveal">
+            <svg viewBox="0 0 1000 640" role="img" aria-label="Schematische Galaxiekarte des Dominat">
+              <defs>
+                <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="var(--accent)" stop-opacity=".55" />
+                  <stop offset="100%" stop-color="var(--accent)" stop-opacity="0" />
+                </radialGradient>
+              </defs>
+
+              <!-- Spiralarme (rein dekorativ) -->
+              <path d="M 560 300 C 460 220, 340 200, 220 260 C 120 310, 60 420, 90 540" fill="none" stroke="var(--line)" stroke-width="26" opacity=".35" />
+              <path d="M 560 300 C 660 240, 780 250, 870 340 C 930 400, 950 470, 920 540" fill="none" stroke="var(--line)" stroke-width="26" opacity=".3" />
+              <path d="M 560 300 C 520 380, 480 460, 380 520 C 320 555, 250 560, 190 540" fill="none" stroke="var(--line)" stroke-width="20" opacity=".22" />
+
+              <!-- totes Zentrum -->
+              <circle cx="560" cy="300" r="90" fill="url(#coreGlow)" />
+              <circle class="map-core-zone" cx="560" cy="300" r="22" />
+              <text x="560" y="300" text-anchor="middle" dy="42" font-size="10" fill="var(--faint)" font-style="italic">totes Zentrum</text>
+
+              <!-- Sprungtor-Routen -->
+              <path class="map-gate" data-nodes="meridian nyxar" d="M540,300 L470,260" />
+              <path class="map-gate" data-nodes="meridian sonnensystem" d="M540,300 L410,310" />
+              <path class="map-gate" data-nodes="meridian fenwyld" d="M540,300 L500,200" />
+              <path class="map-gate" data-nodes="nyxar sonnensystem" d="M470,260 L410,310" />
+              <path class="map-gate" data-nodes="sonnensystem fenwyld" d="M410,310 L500,200" />
+              <path class="map-gate weak" data-nodes="meridian kharn" d="M540,300 L860,480" />
+              <path class="map-gate weak" data-nodes="meridian aeldir" d="M540,300 L120,560" />
+              <path class="map-gate weak" data-nodes="meridian wanderer" d="M540,300 L700,400" />
+              <path class="map-gate weak" data-nodes="wanderer cluster" d="M700,400 L770,440" />
+
+              <!-- Hanse-Handelsposten (dekorativ, kleine Knoten entlang der Routen) -->
+              <g class="map-node node-hanse" data-node="hanse1" tabindex="0" role="button" aria-label="Hanse-Handelsposten">
+                <circle class="core" cx="505" cy="280" r="3.2" />
+              </g>
+              <g class="map-node node-hanse" data-node="hanse2" tabindex="0" role="button" aria-label="Hanse-Handelsposten">
+                <circle class="core" cx="330" cy="420" r="3.2" />
+              </g>
+              <g class="map-node node-hanse" data-node="hanse3" tabindex="0" role="button" aria-label="Hanse-Handelsposten">
+                <circle class="core" cx="700" cy="360" r="3.2" />
+              </g>
+              <g class="map-node node-hanse" data-node="hanse4" tabindex="0" role="button" aria-label="Hanse-Handelsposten">
+                <circle class="core" cx="620" cy="230" r="3.2" />
+              </g>
+
+              <!-- kleiner Sprungtor-Cluster beim Wanderer -->
+              <g class="map-node node-hanse" data-node="cluster" tabindex="0" role="button" aria-label="Kleiner Sprungtor-Cluster">
+                <circle class="core" cx="770" cy="440" r="3.2" />
+              </g>
+
+              <!-- Hauptknoten -->
+              <g class="map-node" data-node="meridian" tabindex="0" role="button" aria-label="Meridian">
+                <circle class="halo" cx="540" cy="300" r="16" />
+                <circle class="core" cx="540" cy="300" r="7" />
+                <text x="540" y="300" dx="16" dy="-12">Meridian</text>
+              </g>
+              <g class="map-node" data-node="nyxar" tabindex="0" role="button" aria-label="Nyxar">
+                <circle class="halo" cx="470" cy="260" r="14" />
+                <circle class="core" cx="470" cy="260" r="6" />
+                <text x="470" y="260" dx="14" dy="-10">Nyxar</text>
+              </g>
+              <g class="map-node" data-node="sonnensystem" tabindex="0" role="button" aria-label="Sonnensystem">
+                <circle class="halo" cx="410" cy="310" r="14" />
+                <circle class="core" cx="410" cy="310" r="6" />
+                <text x="410" y="310" dx="-14" dy="-10" text-anchor="end">Sonnensystem</text>
+              </g>
+              <g class="map-node" data-node="fenwyld" tabindex="0" role="button" aria-label="Fenwyld">
+                <circle class="halo" cx="500" cy="200" r="14" />
+                <circle class="core" cx="500" cy="200" r="6" />
+                <text x="500" y="200" dx="14" dy="-10">Fenwyld</text>
+              </g>
+              <g class="map-node" data-node="kharn" tabindex="0" role="button" aria-label="Kharn">
+                <circle class="halo" cx="860" cy="480" r="14" />
+                <circle class="core" cx="860" cy="480" r="6" />
+                <text x="860" y="480" dx="-14" dy="24" text-anchor="end">Kharn</text>
+              </g>
+              <g class="map-node" data-node="aeldir" tabindex="0" role="button" aria-label="Aeldir-Kolonieschiff">
+                <circle class="halo" cx="120" cy="560" r="14" />
+                <circle class="core" cx="120" cy="560" r="6" />
+                <text x="120" y="560" dx="14" dy="24">Aeldir-Kolonieschiff</text>
+              </g>
+              <g class="map-node" id="wandererNode" data-node="wanderer" tabindex="0" role="button" aria-label="Der Wanderer">
+                <circle class="halo" cx="700" cy="400" r="13" />
+                <circle class="core" cx="700" cy="400" r="5.5" />
+                <text x="700" y="400" dx="14" dy="-10">Der Wanderer</text>
+              </g>
+            </svg>
+          </div>
+
+          <aside class="map-panel reveal" id="mapPanel" aria-live="polite">
+            <!-- wird per JS befüllt -->
+          </aside>
+        </div>
+      </section>
+
+      <section class="map-section" id="sprungtore">
+        <h2>Das Sprungtor-Netzwerk.</h2>
+        <p>Uralte Relikte einer längst verschwundenen Vorläufer-Zivilisation verbinden feste Sternensysteme fest miteinander — kein freies Springen nach Belieben, sondern ein Netzwerk aus Knoten und Routen, ähnlich einem U-Bahn-Plan im Großen. Keines der sechs heutigen Völker hat die Tore gebaut, keines versteht die zugrundeliegende Technologie vollständig. Man weiß, wie man sie bedient, nicht, wie sie funktionieren.</p>
+        <p>Mit Tor-Anbindung dauert eine Reise Stunden bis wenige Tage. Ohne sie greift nur der konventionelle Antrieb — Wochen bis Monate, was schlecht angebundene Systeme spürbar isoliert, selbst innerhalb derselben Galaxie. Kontrolle über zentrale Sprungtor-Knoten bedeutet damit faktische Kontrolle über Handel und militärische Beweglichkeit — ein Machtfaktor ganz unabhängig von formaler Politik im Dominat. <strong>Meridian</strong> liegt am dichtesten vernetzten Knotenpunkt des gesamten Systems, ein weiterer, ganz praktischer Grund für seine Rolle als Sitz des Rats.</p>
+      </section>
+
+      <section class="map-section" id="legende">
+        <h2>Legende.</h2>
+        <div class="map-legend">
+          <div class="map-legend-item">
+            <span class="map-legend-swatch swatch-strong"></span>
+            <p><strong>Feste Sprungtor-Route</strong>&nbsp;Schnelle Reise, Stunden bis wenige Tage.</p>
+          </div>
+          <div class="map-legend-item">
+            <span class="map-legend-swatch swatch-weak"></span>
+            <p><strong>Schwache / keine Anbindung</strong>&nbsp;Konventioneller Antrieb, Wochen bis Monate.</p>
+          </div>
+          <div class="map-legend-item">
+            <span class="swatch-node"></span>
+            <p><strong>Kernwelt / Schauplatz</strong>&nbsp;Anklicken öffnet das jeweilige Archiv.</p>
+          </div>
+          <div class="map-legend-item">
+            <span class="swatch-node small"></span>
+            <p><strong>Hanse-Handelsposten</strong>&nbsp;Kleine Außenposten, verteilt über die wichtigsten Knoten der Karte.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="volk-back reveal" style="width:min(var(--max), calc(100% - 48px)); margin:0 auto 90px; display:flex; gap:16px; flex-wrap:wrap;">
+      <a class="btn ghost" href="../home.html#voelker">← Zurück zu den Völkern</a>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div><span class="brand-mark small" aria-hidden="true"></span> ASTRANOX</div>
+    <p>Retro Science-Fantasy · ~340 n.Z.</p>
+    <a href="../home.html#top">Zurück nach oben ↑</a>
+  </footer>
+
+  <div class="audio-dock" id="audioDock" aria-label="Audiosteuerung">
+    <button id="dockToggle" class="dock-play" type="button" aria-label="Audio abspielen oder pausieren">▶</button>
+    <div class="dock-meta">
+      <span>Thema</span>
+      <small id="dockStatus">Klang aus</small>
+    </div>
+    <input id="volume" type="range" min="0" max="1" value="0.55" step="0.01" aria-label="Lautstärke" />
+  </div>
+
+  <script src="../js/reveal.js"></script>
+  <script src="../js/audio-persist.js"></script>
+  <script src="../js/volk-audio.js"></script>
+  <script>
+  (function () {
+    "use strict";
+
+    var NODES = {
+      meridian: {
+        kicker: "Sitz des Dominat · Ringstation",
+        title: "Meridian",
+        tagline: "Kein Motor der Macht. Nur die Bühne, auf der sie sich zeigt.",
+        paragraphs: [
+          "Keine eigene Welt, sondern eine gigantische, künstliche Ringstation — positioniert dort, wo sich mehrere Sprungtor-Routen kreuzen. Von praktisch jedem bewohnten System aus vergleichsweise gut erreichbar, genau das war der strategische Zweck der Standortwahl.",
+          "Oben tagt das Dominat, in der Mitte residieren Delegierte, darunter pulsiert der Handelsring mit dem Hauptquartier der Hanse. Ganz unten: das Landedeck. Die vertikale Anordnung spiegelt Rang wider — buchstäblich, nicht nur symbolisch."
+        ],
+        facts: [["Typ", "Künstliche Ringstation"], ["Rolle", "Sitz des galaktischen Rats"], ["Anbindung", "Dichtester Knoten der Karte"]],
+        link: { href: "../home.html#dominat-heading", label: "Mehr über das Dominat →" }
+      },
+      nyxar: {
+        kicker: "Heimatwelt · Nyxaren",
+        title: "Nyxar",
+        tagline: "Ein klarer Himmel gilt hier fast als religiöses Ereignis.",
+        paragraphs: [
+          "Eine lichtlose, permanent von schweren Gewitterwolken verhangene Welt. Der Großteil der Oberfläche ist ein giftiger Ozean; einzige Landmasse sind schroffe Felsnadeln, auf deren Hochebenen die einzige Stadt des Planeten thront: Cruor.",
+          "Genau diese Umgebung erzwang über Generationen die biologische Anpassung, die die Nyxaren heute prägt — kein Fluch, keine Magie, nur Jahrhunderte harter Selektion."
+        ],
+        facts: [["Bevölkerung", "Nyxaren"], ["Hauptstadt", "Cruor"], ["Lage", "Innerer Arm, nah an Meridian"]],
+        link: { href: "volk-nyxaren.html", label: "Archiv der Nyxaren öffnen →" }
+      },
+      sonnensystem: {
+        kicker: "Erde-Reste · Mond · Mars · Terra Nova",
+        title: "Das Sonnensystem",
+        tagline: "Ein Grab mit einem einzigen, stillen Wächter.",
+        paragraphs: [
+          "Die Erde-Reste sind seit ihrer Zerstörung (0 n.Z.) unbewohnbare Trümmerwelt — Ausgangspunkt und Namensgeberin für Terra Nova, zusammengeschweißt aus Wracks und alter Orbitalinfrastruktur. Der Mond umkreist die Reste weiterhin, unbewohnt, ein stiller Trabant über einem toten Planeten.",
+          "Auf dem Mars unterhalten die Nyxaren eine eigene Flottenwerft — eine ständige, unübersehbare Machtdemonstration mitten im Sonnensystem der einstigen Sklavenhalter, buchstäblich vor der Haustür von Terra Nova."
+        ],
+        facts: [["Bevölkerung", "Terraner"], ["Station", "Terra Nova"], ["Besonderheit", "Nyxaren-Flottenwerft auf dem Mars"]],
+        link: { href: "volk-terraner.html", label: "Archiv der Terraner öffnen →" }
+      },
+      fenwyld: {
+        kicker: "Heimatwelt · Lykaner",
+        title: "Fenwyld",
+        tagline: "Fruchtbar bis zum Überfluss — und trotzdem hart erkämpft.",
+        paragraphs: [
+          "Ein durchgängig üppiger Dschungelplanet aus dichten Wäldern, sanften Hügeln und breiten Flüssen. Bewusst keine kargen Zonen wie auf Nyxar — Fenwyld gibt großzügig, was andere Welten den eigenen Bewohnern verwehren.",
+          "Die Hauptsiedlung Caer Gweyra liegt an der Mündung des Gweyras und wächst, den Baumkronen folgend, eher in die Höhe als in die Breite."
+        ],
+        facts: [["Bevölkerung", "Lykaner"], ["Hauptsiedlung", "Caer Gweyra"], ["Lage", "In erreichbarer Nähe zu Nyxar"]],
+        link: { href: "volk-lykaner.html", label: "Archiv der Lykaner öffnen →" }
+      },
+      kharn: {
+        kicker: "Heimatwelt · Orks",
+        title: "Kharn",
+        tagline: "An den Rand gedrängt — wie das Volk, das hier lebt.",
+        paragraphs: [
+          "Eine raue Welt aus Steppen und Sandwüsten, durchzogen von schroffen Felsnadeln. Vier Klan-Städte verteilen sich auf die wenigen lebenswerten Punkte des Planeten, darüber liegt die neutrale Hauptstadt Schädelthron mit dem Tempel des Weltenfressers.",
+          "Bewusst an den äußeren, schwach angebundenen Rand der Galaxie gesetzt — passend zur Rolle der Orks als späte, instrumentalisierte Schöpfung des Imperiums."
+        ],
+        facts: [["Bevölkerung", "Orks"], ["Hauptstadt", "Schädelthron"], ["Anbindung", "Schwach, äußerer Arm"]],
+        link: { href: "volk-orks.html", label: "Archiv der Orks öffnen →" }
+      },
+      aeldir: {
+        kicker: "Ankunftspunkt · Aeldir-Flotte",
+        title: "Aeldir-Kolonieschiff",
+        tagline: "Der einzige feste Punkt eines heimatlosen Volkes.",
+        paragraphs: [
+          "Am äußersten Rand der Galaxie verankert, dort, wo die Flotte aus Aethyr einst einflog. Ein einziges gigantisches Kolonieschiff, begleitet von kleineren Schiffen — trotz des nomadischen Lebensstils der Aeldir im Kleinen ist der große Träger ein fixer Ort auf jeder Karte.",
+          "Von hier aus ziehen die Aeldir durchs Dominat, sammeln Wissen und halten, meist unbemerkt, an der eigenen diplomatischen Vermittlerrolle fest."
+        ],
+        facts: [["Bevölkerung", "Aeldir"], ["Status", "Nomadisch, aber fest verankert"], ["Lage", "Äußerster Rand der Galaxie"]],
+        link: { href: "volk-aeldir.html", label: "Archiv der Aeldir öffnen →" }
+      },
+      wanderer: {
+        kicker: "Prometheaner-Station · beweglich",
+        title: "Der Wanderer",
+        tagline: "Niemandes Territorium. Aber stets in Reichweite der Kundschaft.",
+        paragraphs: [
+          "Kein fester Ort, sondern ein beweglicher Punkt: Stand ~340 n.Z. treibt die Station im Grenzraum zwischen dem Nyxaren-Kernarm und den äußeren Regionen, nahe eines kleineren, weniger frequentierten Sprungtor-Clusters.",
+          "Im Zentrum residiert der Kern — die direkte Fortführung der einstigen Verteidigungs-KI PROMETHEUS. Passend zur ruhelosen Söldner-Natur der Prometheaner ist die Position auf dieser Karte nur eine Momentaufnahme."
+        ],
+        facts: [["Bevölkerung", "Prometheaner"], ["Zentrum", "Der Kern"], ["Position", "Beweglich, Grenzraum"]],
+        link: { href: "volk-prometheaner.html", label: "Archiv der Prometheaner öffnen →" }
+      },
+      hanse1: { kicker: "Neutrale Handelsfraktion", title: "Hanse-Handelsposten", tagline: "Wo Verkehr ist, ist auch die Hanse.", paragraphs: ["Kleine Außenposten der galaxieweiten Händlerkonföderation, verteilt über die wichtigsten Sprungtor-Knoten. Keine Zentralregierung, kein Vorstand — nur einzelne Händlerfamilien und -gilden, die sich bei Bedarf koordinieren.", "Ihr größter Umschlagplatz liegt im Handelsring von Meridian, aber Präsenz zeigt die Hanse praktisch überall."], facts: [["Ethik", "Keine Grenzen im Handel"], ["Sitz im Dominat", "Neutral, meist enthaltend"]] },
+      hanse2: { kicker: "Neutrale Handelsfraktion", title: "Hanse-Handelsposten", tagline: "Neutralität ist bei der Hanse Geschäftsprinzip, nicht Haltung.", paragraphs: ["Ein weiterer kleiner Außenposten entlang einer belebten Handelsroute. Volkszugehörigkeit spielt bei der Aufnahme in die Hanse keine Rolle — einzig das Geschäft zählt."], facts: [["Ethik", "Keine Grenzen im Handel"], ["Sitz im Dominat", "Neutral, meist enthaltend"]] },
+      hanse3: { kicker: "Neutrale Handelsfraktion", title: "Hanse-Handelsposten", tagline: "Verlässlich neutral. Alles andere als 'die Guten'.", paragraphs: ["Ein Außenposten in der Nähe der Wanderer-Route — praktisch, denn die Prometheaner sind selbst notorische Vertragspartner der Hanse, wenn der Preis stimmt."], facts: [["Ethik", "Keine Grenzen im Handel"], ["Sitz im Dominat", "Neutral, meist enthaltend"]] },
+      hanse4: { kicker: "Neutrale Handelsfraktion", title: "Hanse-Handelsposten", tagline: "Angelehnt an die historische, irdische Hanse.", paragraphs: ["Macht und Einfluss einzelner Hanse-Mitglieder variieren stark, ganz wie einst bei den Hansestädten — dieser Posten ist eher klein, aber strategisch günstig gelegen."], facts: [["Ethik", "Keine Grenzen im Handel"], ["Sitz im Dominat", "Neutral, meist enthaltend"]] },
+      cluster: {
+        kicker: "Kleiner Sprungtor-Cluster",
+        title: "Grenzraum-Cluster",
+        tagline: "Weniger frequentiert. Genau deshalb bevorzugt vom Wanderer.",
+        paragraphs: ["Ein kleinerer, weniger stark frequentierter Sprungtor-Knoten am Rand des Nyxaren-Kernarms. Kein eigener Handlungsort, aber der Grund, warum Der Wanderer ausgerechnet hier treibt: nah genug an Kundschaft, fern genug von Aufmerksamkeit."],
+        facts: [["Frequentierung", "Gering"], ["Bekannt für", "Nähe zum Wanderer"]]
+      }
+    };
+
+    var panel = document.getElementById("mapPanel");
+    var nodeEls = document.querySelectorAll(".map-node");
+    var gateEls = document.querySelectorAll(".map-gate");
+
+    function renderPanel(key) {
+      var d = NODES[key];
+      if (!d) return;
+      var factsHtml = (d.facts || []).map(function (f) {
+        return '<div><span>' + f[0] + '</span><strong>' + f[1] + '</strong></div>';
+      }).join("");
+      var paraHtml = (d.paragraphs || []).map(function (p) { return "<p>" + p + "</p>"; }).join("");
+      var linkHtml = d.link ? '<a class="btn ghost" href="' + d.link.href + '">' + d.link.label + "</a>" : "";
+      panel.innerHTML =
+        '<p class="kicker">' + d.kicker + '</p>' +
+        '<h3>' + d.title + '</h3>' +
+        '<p class="tagline">' + d.tagline + '</p>' +
+        paraHtml +
+        '<div class="map-facts">' + factsHtml + '</div>' +
+        linkHtml;
+    }
+
+    function selectNode(key) {
+      nodeEls.forEach(function (el) { el.classList.toggle("is-active", el.dataset.node === key); });
+      gateEls.forEach(function (el) {
+        var nodes = (el.dataset.nodes || "").split(" ");
+        el.classList.toggle("is-lit", nodes.indexOf(key) !== -1);
+      });
+      renderPanel(key);
+    }
+
+    nodeEls.forEach(function (el) {
+      el.addEventListener("click", function () { selectNode(el.dataset.node); });
+      el.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selectNode(el.dataset.node); }
+      });
+    });
+
+    selectNode("meridian");
+
+    /* Der Wanderer treibt sichtbar leicht umher */
+    var wanderer = document.getElementById("wandererNode");
+    if (wanderer && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      var t = 0;
+      setInterval(function () {
+        t += 0.02;
+        var dx = Math.sin(t) * 10;
+        var dy = Math.cos(t * .7) * 6;
+        wanderer.style.transform = "translate(" + dx.toFixed(2) + "px," + dy.toFixed(2) + "px)";
+      }, 60);
+    }
+  })();
+  </script>
+</body>
+</html>

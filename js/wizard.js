@@ -17,46 +17,47 @@
     { id: "geschick", name: "Geschick" },
     { id: "verstand", name: "Verstand" },
     { id: "wille", name: "Wille" },
-    { id: "praesenz", name: "Präsenz" }
+    { id: "praesenz", name: "Präsenz" },
+    { id: "wahrnehmung", name: "Wahrnehmung" }
   ];
 
   var SKILLS = [
     { id: "nahkampf", name: "Nahkampf", attr: "koerper" },
-    { id: "athletik", name: "Athletik", attr: "koerper" },
-    { id: "widerstand", name: "Widerstand", attr: "koerper" },
+    { id: "kraftakt", name: "Kraftakt", attr: "koerper" },
+    { id: "zaehigkeit", name: "Zähigkeit", attr: "koerper" },
     { id: "fernkampf", name: "Fernkampf", attr: "geschick" },
+    { id: "gewandtheit", name: "Gewandtheit", attr: "geschick" },
     { id: "heimlichkeit", name: "Heimlichkeit", attr: "geschick" },
-    { id: "fingerfertigkeit", name: "Fingerfertigkeit", attr: "geschick" },
-    { id: "pilotieren", name: "Pilotieren", attr: "geschick" },
     { id: "wissen", name: "Wissen", attr: "verstand" },
     { id: "technik", name: "Technik", attr: "verstand" },
     { id: "medizin", name: "Medizin", attr: "verstand" },
-    { id: "wahrnehmung", name: "Wahrnehmung", attr: "verstand" },
-    { id: "disziplin", name: "Disziplin", attr: "wille" },
-    { id: "okkultismus", name: "Okkultismus & Ritual", attr: "wille" },
-    { id: "ueberzeugung", name: "Überzeugung", attr: "praesenz" },
-    { id: "einschuechterung", name: "Einschüchterung", attr: "praesenz" },
-    { id: "taeuschung", name: "Täuschung", attr: "praesenz" }
+    { id: "resilienz", name: "Resilienz", attr: "wille" },
+    { id: "ritual", name: "Ritual", attr: "wille" },
+    { id: "ueberzeugen", name: "Überzeugen", attr: "praesenz" },
+    { id: "einschuechtern", name: "Einschüchtern", attr: "praesenz" },
+    { id: "fuehrung", name: "Führung", attr: "praesenz" },
+    { id: "wahrnehmung", name: "Wahrnehmung", attr: "wahrnehmung" },
+    { id: "spurensuche", name: "Spurensuche", attr: "wahrnehmung" }
   ];
 
-  var CREATION = { attrStart: 2, attrPool: 7, attrCap: 4, skillPool: 24, skillCap: 3 };
+  var CREATION = { attrStart: 1, attrPool: 8, attrCap: 4, skillPool: 24, skillCap: 3 };
 
   var SUBFACTIONS = {
     nyxaren: {
       label: "Haus",
       items: [
         { id: "vossthane", name: "Voss'thane", desc: "Das Kaiserhaus — Vereinigung aller vier Domänen.", abilities: ["Blutrecht des Throns — einmal pro Sitzung eine Order erteilen, der niedere Diener nicht widersprechen können.", "Erstes Blut — Wunden heilen im Ruhezustand geringfügig schneller."] },
-        { id: "amaris", name: "Amaris", desc: "Kinder des Mondes — Flotten und Eroberung.", abilities: ["Flottentaktik — Bonus auf Manöver in Raumgefechten.", "Kalte Entschlossenheit — Resistenz gegen Einschüchterung im Kampf."] },
+        { id: "amaris", name: "Amaris", desc: "Kinder des Mondes — Flotten und Eroberung.", abilities: ["Flottentaktik — Bonus auf Manöver in Raumgefechten.", "Kalte Entschlossenheit — Resistenz gegen Einschüchtern im Kampf."] },
         { id: "morana", name: "Morana", desc: "Kinder des Todes — Blut und Urteil.", abilities: ["Blutgespür — echtes Blut in der Nähe erkennen.", "Scharfrichterblick — Bonus bei der Einschätzung von Schwäche eines Gegners."] },
-        { id: "lucius", name: "Lucius", desc: "Kinder des Lichts — Wissen, Lehre, Diplomatie.", abilities: ["Lehrmeisterwissen — Bonus auf Wissen bei religiösen/historischen Fragen.", "Silberzunge des Hofes — Bonus auf Überzeugung gegenüber Adel."] },
+        { id: "lucius", name: "Lucius", desc: "Kinder des Lichts — Wissen, Lehre, Diplomatie.", abilities: ["Lehrmeisterwissen — Bonus auf Wissen bei religiösen/historischen Fragen.", "Silberzunge des Hofes — Bonus auf Überzeugen gegenüber Adel."] },
         { id: "lilith", name: "Lilith", desc: "Kinder der Nacht — Schatten und Geheimdienst.", abilities: ["Schattenpfad — Bonus auf Heimlichkeit in Innenräumen.", "Ohren an der Wand — erfährt früher von Gerüchten/Intrigen am Ort."] }
       ]
     },
     terraner: {
       label: "Fraktion",
       items: [
-        { id: "ankerwacht", name: "Ankerwacht", desc: "Bewahrt die Station, misstrauisch gegenüber dem Dominat.", abilities: ["Wachsamer Blick — Bonus auf Wahrnehmung bei Bedrohungen.", "Alte Disziplin — Resistenz gegen Täuschung."] },
-        { id: "steuerleute", name: "Steuerleute", desc: "Die politische Stimme der Terraner im Dominat.", abilities: ["Verhandlungsgeschick — Bonus auf Überzeugung im diplomatischen Kontext.", "Legitimitätsanspruch — kann sich einmal pro Sitzung glaubhaft als offizieller Vertreter ausweisen."] },
+        { id: "ankerwacht", name: "Ankerwacht", desc: "Bewahrt die Station, misstrauisch gegenüber dem Dominat.", abilities: ["Wachsamer Blick — Bonus auf Wahrnehmung bei Bedrohungen.", "Alte Disziplin — Resistenz gegen Manipulation und Täuschungsversuche."] },
+        { id: "steuerleute", name: "Steuerleute", desc: "Die politische Stimme der Terraner im Dominat.", abilities: ["Verhandlungsgeschick — Bonus auf Überzeugen im diplomatischen Kontext.", "Legitimitätsanspruch — kann sich einmal pro Sitzung glaubhaft als offizieller Vertreter ausweisen."] },
         { id: "lotsen", name: "Lotsen", desc: "Reisen zwischen den verstreuten Menschen.", abilities: ["Ortskenntnis der Diaspora — kennt eher Kontakte unter verstreuten Menschen.", "Improvisationstalent — Bonus auf Technik bei behelfsmäßigen Reparaturen."] }
       ]
     },
@@ -64,19 +65,19 @@
       label: "Rolle",
       items: [
         { id: "krieger", name: "Krieger", desc: "Verteidiger des Rudels, ausgebildet an Speer, Bogen und Kralle.", abilities: ["Rudeltaktik — Bonus im Kampf, wenn mit anderen Lykanern gemeinsam gekämpft wird.", "Zähigkeit Fenwylds — erhöhte Widerstandsfähigkeit gegen Gift und Krankheit."] },
-        { id: "schamane", name: "Schamane", desc: "Wandelt auf dem Pfad zur Priesterschaft.", abilities: ["Ritualgesang — Bonus auf Okkultismus bei gemeinschaftlichen Ritualen.", "Blick durch den Wald — Wahrnehmung nutzbar, um Wettereinflüsse vorherzusehen."] },
+        { id: "schamane", name: "Schamane", desc: "Wandelt auf dem Pfad zur Priesterschaft.", abilities: ["Ritualgesang — Bonus auf Ritual bei gemeinschaftlichen Ritualen.", "Blick durch den Wald — Wahrnehmung nutzbar, um Wettereinflüsse vorherzusehen."] },
         { id: "jaeger", name: "Jäger & Sammler", desc: "Kennt Fenwyld wie kein anderer.", abilities: ["Fährtenleser — Bonus auf Wahrnehmung im Gelände.", "Ein mit dem Dschungel — Bonus auf Heimlichkeit in Wäldern/Dschungeln."] },
-        { id: "handwerker", name: "Handwerker", desc: "Baut Werkzeug, Waffen, pflegt die Bindung zu den lebenden Schiffen.", abilities: ["Schiffsbindung — Bonus auf Technik im Umgang mit lebenden Schiffen.", "Geschickte Hand — Bonus auf Fingerfertigkeit bei traditioneller Handwerkskunst."] }
+        { id: "handwerker", name: "Handwerker", desc: "Baut Werkzeug, Waffen, pflegt die Bindung zu den lebenden Schiffen.", abilities: ["Schiffsbindung — Bonus auf Technik im Umgang mit lebenden Schiffen.", "Geschickte Hand — Bonus auf Gewandtheit bei traditioneller Handwerkskunst."] }
       ]
     },
     aeldir: {
       label: "Kaste",
       items: [
-        { id: "gelehrte", name: "Gelehrte", desc: "🔶 Bewahren Wissen und Erinnerung an Aethyr.", abilities: ["🔶 Archiv des Verlusts — Bonus auf Wissen zu vergangenen Ereignissen.", "🔶 Klarer Geist — Bonus auf Disziplin gegen Verwirrung/Täuschung."] },
-        { id: "krieger", name: "Krieger", desc: "🔶 Verteidigen die Schiffsverbände mit kühler Präzision.", abilities: ["🔶 Erhabene Klinge — Bonus auf Nahkampf mit traditionellen Waffen.", "🔶 Unbewegt — Resistenz gegen Einschüchterung."] },
+        { id: "gelehrte", name: "Gelehrte", desc: "🔶 Bewahren Wissen und Erinnerung an Aethyr.", abilities: ["🔶 Archiv des Verlusts — Bonus auf Wissen zu vergangenen Ereignissen.", "🔶 Klarer Geist — Bonus auf Resilienz gegen Verwirrung/Täuschung."] },
+        { id: "krieger", name: "Krieger", desc: "🔶 Verteidigen die Schiffsverbände mit kühler Präzision.", abilities: ["🔶 Erhabene Klinge — Bonus auf Nahkampf mit traditionellen Waffen.", "🔶 Unbewegt — Resistenz gegen Einschüchtern."] },
         { id: "handwerker", name: "Handwerker", desc: "🔶 Erhalten die Schiffsverbände und ihre Technologie.", abilities: ["🔶 Präzisionsarbeit — Bonus auf Technik bei filigranen Reparaturen."] },
-        { id: "sprecher", name: "Sprecher", desc: "🔶 Diplomaten, vertreten die Aeldir nach außen.", abilities: ["🔶 Distanzierte Würde — Bonus auf Überzeugung gegenüber anderen Völkern."] },
-        { id: "dienende", name: "Dienende", desc: "🔶 Halten die Schiffsverbände im Alltag am Laufen.", abilities: ["🔶 Stille Effizienz — Bonus auf Fingerfertigkeit bei alltäglichen Aufgaben."] }
+        { id: "sprecher", name: "Sprecher", desc: "🔶 Diplomaten, vertreten die Aeldir nach außen.", abilities: ["🔶 Distanzierte Würde — Bonus auf Überzeugen gegenüber anderen Völkern."] },
+        { id: "dienende", name: "Dienende", desc: "🔶 Halten die Schiffsverbände im Alltag am Laufen.", abilities: ["🔶 Stille Effizienz — Bonus auf Gewandtheit bei alltäglichen Aufgaben."] }
       ]
     },
     orks: null,

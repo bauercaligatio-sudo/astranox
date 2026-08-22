@@ -44,6 +44,7 @@
     <nav class="main-nav" aria-label="Hauptnavigation">
       <a href="home.html#welt">Welt</a>
       <a href="home.html#voelker">Völker</a>
+      <a href="pages/karte.html">Karte</a>
       <a href="home.html#zeitlinie">Zeitlinie</a>
       <a href="home.html#agenten">Agenten</a>
     </nav>
@@ -61,13 +62,14 @@
     function renderCharacter(c) {
     if (c.faction) document.documentElement.dataset.faction = c.faction;
 
-    var attrNames = { koerper:"Körper", geschick:"Geschick", verstand:"Verstand", wille:"Wille", praesenz:"Präsenz" };
+    var attrNames = { koerper:"Körper", geschick:"Geschick", verstand:"Verstand", wille:"Wille", praesenz:"Präsenz", wahrnehmung:"Wahrnehmung" };
     var skillNames = {
-      nahkampf:"Nahkampf", athletik:"Athletik", widerstand:"Widerstand",
-      fernkampf:"Fernkampf", heimlichkeit:"Heimlichkeit", fingerfertigkeit:"Fingerfertigkeit", pilotieren:"Pilotieren",
-      wissen:"Wissen", technik:"Technik", medizin:"Medizin", wahrnehmung:"Wahrnehmung",
-      disziplin:"Disziplin", okkultismus:"Okkultismus & Ritual",
-      ueberzeugung:"Überzeugung", einschuechterung:"Einschüchterung", taeuschung:"Täuschung"
+      nahkampf:"Nahkampf", kraftakt:"Kraftakt", zaehigkeit:"Zähigkeit",
+      fernkampf:"Fernkampf", gewandtheit:"Gewandtheit", heimlichkeit:"Heimlichkeit",
+      wissen:"Wissen", technik:"Technik", medizin:"Medizin",
+      resilienz:"Resilienz", ritual:"Ritual",
+      ueberzeugen:"Überzeugen", einschuechtern:"Einschüchtern", fuehrung:"Führung",
+      wahrnehmung:"Wahrnehmung", spurensuche:"Spurensuche"
     };
 
     var attrHtml = Object.keys(attrNames).map(function (k) {
