@@ -356,7 +356,7 @@ h1 em { color:var(--accent-2); font-style:italic; transition: color .6s; }
 .codex-line strong { font:400 12px Georgia, serif; color:#d8cdb8; text-align:right; }
 
 .section { width:min(var(--max), calc(100% - 48px)); margin:0 auto; padding:120px 0; }
-.section-head { max-width:780px; margin-bottom:60px; }
+.section-head { max-width:100%; margin-bottom:60px; }
 .section-head h2, .dominat-copy h2, .agents-copy h2 { font-size:clamp(42px,6vw,82px); line-height:.95; }
 .section-head > p:last-child { color:var(--muted); max-width:62ch; margin-top:24px; }
 
@@ -514,7 +514,7 @@ html[data-faction="aeldir"] { --accent:#716389; --accent-soft:#2b2738; --accent-
 .volk-body { width:min(var(--max), calc(100% - 48px)); margin:0 auto; }
 .volk-section { padding:88px 0; border-bottom:1px solid var(--line); scroll-margin-top:140px; }
 .volk-section:last-child { border-bottom:0; }
-.volk-section h2 { font-size:clamp(36px,4.5vw,56px); line-height:.95; margin-bottom:30px; max-width:16ch; }
+.volk-section h2 { font-size:clamp(36px,4.5vw,56px); line-height:1.0; margin-bottom:30px; max-width:36ch; }
 .volk-section p { color:#aaa397; max-width:none; margin:0 0 20px; }
 .volk-section p:last-child { margin-bottom:0; }
 .volk-section p strong { color:var(--paper); font-weight:400; }
