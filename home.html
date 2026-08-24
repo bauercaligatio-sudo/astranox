@@ -201,13 +201,29 @@
       </div>
       <div class="probe-card reveal" data-delay="1" id="probe-demo">
         <div class="probe-formula"><strong>W20</strong><span>+</span><strong>Attribut</strong><span>+</span><strong>Fertigkeit</strong></div>
-        <div class="probe-target"><span>Zielwerte</span><strong>10 · 15 · 20 · 25</strong></div>
-        <div class="probe-outcomes">
-          <p><strong>Erfolg</strong><span>Zielwert erreicht</span></p>
-          <p><strong>Kritisch</strong><span>um 5 übertroffen</span></p>
-          <p><strong>Patzer</strong><span>um 5 verfehlt</span></p>
+        <div class="probe-controls" aria-label="Interaktive Würfelprobe">
+          <label>Attribut
+            <select id="probeAttribute">
+              <option value="-1">−1</option><option value="0" selected>0</option><option value="1">+1</option><option value="2">+2</option><option value="3">+3</option>
+            </select>
+          </label>
+          <label>Fertigkeit
+            <select id="probeSkill">
+              <option value="0" selected>0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+            </select>
+          </label>
+          <label>Zielwert
+            <select id="probeDifficulty">
+              <option value="10">10 · leicht</option><option value="15" selected>15 · fordernd</option><option value="20">20 · schwer</option><option value="25">25 · extrem</option>
+            </select>
+          </label>
         </div>
-        <p class="probe-note">Die interaktive Würfelprobe folgt im nächsten Ausbau des Regelbereichs.</p>
+        <button class="probe-roll" id="probeRoll" type="button"><span class="probe-die" id="probeDie">20</span><span>W20 werfen</span></button>
+        <div class="probe-result" id="probeResult" aria-live="polite">
+          <span class="probe-result-label">Bereit</span>
+          <strong>Wähle deine Werte und wirf den Würfel.</strong>
+          <p>Kritische Ergebnisse geben dir ein Vorschlagsrecht für die erzählerische Konsequenz.</p>
+        </div>
       </div>
     </section>
 
@@ -368,5 +384,6 @@
   <script src="js/audio-persist.js"></script>
   <script src="app.js"></script>
   <script src="js/wizard.js"></script>
+  <script src="js/rules-demo.js"></script>
 </body>
 </html>
