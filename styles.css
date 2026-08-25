@@ -582,9 +582,10 @@ html[data-faction="aeldir"] { --accent:#716389; --accent-soft:#2b2738; --accent-
 
 /* Atmosphärische Schmuckbilder innerhalb der Volk-Textabschnitte */
 .volk-section::after { content:""; display:block; clear:both; }
-.volk-figure { float:none; max-width:none; margin:0 0 46px; }
-.volk-figure--right, .volk-figure--left { float:none; margin:0 0 46px; }
-.volk-figure img { width:100%; max-height:680px; object-fit:cover; display:block; border:1px solid var(--line); filter:saturate(.86) contrast(1.03); }
+.volk-figure { width:min(48%,590px); margin:6px 0 34px; }
+.volk-figure--right { float:right; margin-left:clamp(32px,4vw,64px); }
+.volk-figure--left { float:left; margin-right:clamp(32px,4vw,64px); }
+.volk-figure img { width:100%; display:block; border:1px solid var(--line); filter:saturate(.86) contrast(1.03); }
 .volk-figure figcaption { margin-top:12px; font:italic 13px/1.55 Georgia,serif; color:var(--muted); }
 .lore-callout { max-width:760px; margin:42px 0 0; padding:28px 32px; border-left:2px solid var(--accent); background:color-mix(in srgb,var(--accent) 8%,transparent); }
 .lore-callout span { color:var(--accent-2); text-transform:uppercase; letter-spacing:.15em; font-size:9px; font-weight:700; }
